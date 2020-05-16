@@ -10,14 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -64,7 +61,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
         return mMessageList.size();
     }
 
-    public void clear(){
+    void clear(){
             mMessageList.clear();
     }
 
@@ -137,14 +134,11 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
                     StorageReference islandRef = root.child(message.getImageLocation());
 
                     final long ONE_MEGABYTE = 512 * 512;
-                    islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            mImage.setVisibility(View.VISIBLE);
-                            mImage.setImageBitmap(bitmap);
+                    islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        mImage.setVisibility(View.VISIBLE);
+                        mImage.setImageBitmap(bitmap);
 
-                        }
                     });
 
                 }else {
@@ -152,12 +146,12 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
                 mMessage1.setText(message.getMessage());
                 if (message.getTimestamp() != null) {
                     Date currentTime = Calendar.getInstance().getTime();
-                    SimpleDateFormat df = new SimpleDateFormat("dd MM yyyy");
+                    SimpleDateFormat df = new SimpleDateFormat("dd MM yyyy", Locale.getDefault());
                     String currentDate = df.format(currentTime);
                     String messageDate = df.format(message.getTimestamp());
 
                     if (currentDate.equals(messageDate)) {
-                        SimpleDateFormat df1 = new SimpleDateFormat("HH:mm:ss");
+                        SimpleDateFormat df1 = new SimpleDateFormat("HH:mm:ss",Locale.getDefault());
                         String time = df1.format(message.getTimestamp());
                         mTime1.setText(time);
                     } else {
@@ -175,30 +169,26 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
                     StorageReference islandRef = root.child(message.getImageLocation());
 
                     final long ONE_MEGABYTE = 512 * 512;
-                    islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            mImage1.setVisibility(View.VISIBLE);
-                            mImage1.setImageBitmap(bitmap);
+                    islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        mImage1.setVisibility(View.VISIBLE);
+                        mImage1.setImageBitmap(bitmap);
 
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle any errors
-                            Log.d("IMage",exception.getLocalizedMessage());
+                    }).addOnFailureListener(exception -> {
+                        // Handle any errors
+                        if(!TextUtils.isEmpty(exception.getLocalizedMessage())) {
+                            Log.d("IMage", exception.getLocalizedMessage());
                         }
                     });
 
                     if (message.getTimestamp() != null) {
                         Date currentTime = Calendar.getInstance().getTime();
-                        SimpleDateFormat df = new SimpleDateFormat("dd MM yyyy");
+                        SimpleDateFormat df = new SimpleDateFormat("dd MM yyyy",Locale.getDefault());
                         String currentDate = df.format(currentTime);
                         String messageDate = df.format(message.getTimestamp());
 
                         if (currentDate.equals(messageDate)) {
-                            SimpleDateFormat df1 = new SimpleDateFormat("HH:mm:ss");
+                            SimpleDateFormat df1 = new SimpleDateFormat("HH:mm:ss",Locale.getDefault());
                             String time = df1.format(message.getTimestamp());
                             mTime.setText(time);
                         } else {
@@ -210,12 +200,12 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
                 mMessage.setText(message.getMessage());
                 if (message.getTimestamp() != null) {
                     Date currentTime = Calendar.getInstance().getTime();
-                    SimpleDateFormat df = new SimpleDateFormat("dd MM yyyy");
+                    SimpleDateFormat df = new SimpleDateFormat("dd MM yyyy",Locale.getDefault());
                     String currentDate = df.format(currentTime);
                     String messageDate = df.format(message.getTimestamp());
 
                     if (currentDate.equals(messageDate)) {
-                        SimpleDateFormat df1 = new SimpleDateFormat("HH:mm:ss");
+                        SimpleDateFormat df1 = new SimpleDateFormat("HH:mm:ss",Locale.getDefault());
                         String time = df1.format(message.getTimestamp());
                         mTime.setText(time);
                     } else {

@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Messaging</string>
+    <string name="channel_name">Message</string>
+    <string name="channel_description">Getting Mgs from someone</string>
+</resources>

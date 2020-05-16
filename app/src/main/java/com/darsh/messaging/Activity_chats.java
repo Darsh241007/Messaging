@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,7 +55,6 @@ public class Activity_chats extends AppCompatActivity {
 
     private StorageReference mStorageRef;
     private CollectionReference mMessageRef;
-    private ImageButton imageButton;
     private static final int PERMISSION_REQUEST_CODE_CAMERA = 243;
     private static final int PERMISSION_REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 435;
     private String value_phone;
@@ -67,7 +67,7 @@ public class Activity_chats extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chats);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        imageButton = findViewById(R.id.ImageButton);
+        ImageButton imageButton = findViewById(R.id.ImageButton);
         send = findViewById(R.id.button3);
         message = findViewById(R.id.message);
         mAuth = FirebaseAuth.getInstance();
@@ -75,9 +75,10 @@ public class Activity_chats extends AppCompatActivity {
 
         imageButton.setOnClickListener(v -> selectImage());
 
-
+        assert getSupportActionBar() != null;
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        assert mAuth.getCurrentUser() != null;
         chat_adapter = new Chat_adapter(getApplicationContext(), mAuth.getCurrentUser().getDisplayName());
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -94,6 +95,7 @@ public class Activity_chats extends AppCompatActivity {
         mRoot = FirebaseFirestore.getInstance();
 
         assert value_phone != null;
+        assert mAuth.getCurrentUser().getPhoneNumber() != null;
         mMessageRef = mRoot.collection("Message").document(mAuth.getCurrentUser().getPhoneNumber()).collection(value_phone);
 
         registration = mMessageRef.orderBy("timestamp", Query.Direction.ASCENDING).addSnapshotListener(chat_adapter);
@@ -109,18 +111,8 @@ public class Activity_chats extends AppCompatActivity {
                 Messages.put("timestamp", FieldValue.serverTimestamp());
 
                 DocumentReference mMessageRef1 = mRoot.collection("Message").document(mAuth.getCurrentUser().getPhoneNumber()).collection(value_phone).document();
-                mMessageRef1.set(Messages).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        message.setText("");
-                    }
-                });
-                mRoot.collection("Message").document(value_phone).collection(mAuth.getCurrentUser().getPhoneNumber()).document(mMessageRef1.getId()).set(Messages).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        message.setText("");
-                    }
-                });
+                mMessageRef1.set(Messages).addOnCompleteListener(task -> message.setText(""));
+                mRoot.collection("Message").document(value_phone).collection(mAuth.getCurrentUser().getPhoneNumber()).document(mMessageRef1.getId()).set(Messages).addOnSuccessListener(aVoid -> message.setText(""));
 
             }
 
@@ -161,7 +153,7 @@ public class Activity_chats extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE_CAMERA:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -175,11 +167,7 @@ public class Activity_chats extends AppCompatActivity {
                         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
                                 != PackageManager.PERMISSION_GRANTED) {
                             showMessageOKCancel(
-                                    (dialog, which) -> {
-                                        requestCameraPermission();
-                                    }, (dialog, which) -> {
-                                        finish();
-                                    });
+                                    (dialog, which) -> requestCameraPermission(), (dialog, which) -> finish());
                         }
                     }
                 }
@@ -197,11 +185,7 @@ public class Activity_chats extends AppCompatActivity {
                         if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 != PackageManager.PERMISSION_GRANTED) {
                             showMessageOKCancel(
-                                    (dialog, which) -> {
-                                        requestExternalStoragePermission();
-                                    }, (dialog, which) -> {
-                                        finish();
-                                    });
+                                    (dialog, which) -> requestExternalStoragePermission(), (dialog, which) -> finish());
                         }
                     }
                 }
@@ -279,32 +263,36 @@ public class Activity_chats extends AppCompatActivity {
         if (resultCode != RESULT_CANCELED) {
             switch (requestCode) {
                 case 0:
-                    if (resultCode == RESULT_OK && data != null) {
-                        Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
+                    if (data.getExtras() != null) {
+                        if (resultCode == RESULT_OK && data.getExtras().containsKey("data")) {
+
+                            Bitmap selectedImage = (Bitmap) data.getExtras().get("data");
 
 
-                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                        assert selectedImage != null;
-                        selectedImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                        byte[] byteArray = stream.toByteArray();
-                        FirebaseFirestore mRootRef = FirebaseFirestore.getInstance();
-                        DocumentReference mImageRef1 = mRootRef.collection("Images").document();
-                        mStorageRef.child("Images").child(mAuth.getCurrentUser().getPhoneNumber()).child(value_phone).child(mImageRef1.getId() + ".jpg").putBytes(byteArray).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                HashMap<String, Object> hashMap = new HashMap<>();
-                                hashMap.put("imageUrl", taskSnapshot.getUploadSessionUri().toString());
-                                hashMap.put("imageLocation", "Images/" + mAuth.getCurrentUser().getPhoneNumber() + "/" + value_phone + "/" + mImageRef1.getId() + ".jpg");
-                                hashMap.put("by", mAuth.getCurrentUser().getDisplayName());
-                                hashMap.put("message", "");
-                                hashMap.put("timestamp", FieldValue.serverTimestamp());
-                                String imageUrl = "Images/" + mAuth.getCurrentUser().getPhoneNumber() + "/" + value_phone + "/" + mImageRef1.getId() + ".jpg";
-                                mRootRef.collection("Message").document(mAuth.getCurrentUser().getPhoneNumber()).collection(value_phone).document(mImageRef1.getId()).set(hashMap).toString();
-                                mRootRef.collection("Message").document(value_phone).collection(mAuth.getCurrentUser().getPhoneNumber()).document(mImageRef1.getId()).set(hashMap);
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            assert selectedImage != null;
+                            selectedImage.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            byte[] byteArray = stream.toByteArray();
+                            FirebaseFirestore mRootRef = FirebaseFirestore.getInstance();
+                            DocumentReference mImageRef1 = mRootRef.collection("Images").document();
+                            assert mAuth.getCurrentUser() != null;
+                            if (!TextUtils.isEmpty(mAuth.getCurrentUser().getPhoneNumber())) {
+                                mStorageRef.child("Images").child(mAuth.getCurrentUser().getPhoneNumber()).child(value_phone).child(mImageRef1.getId() + ".jpg").putBytes(byteArray).addOnSuccessListener(taskSnapshot -> {
+                                    HashMap<String, Object> hashMap = new HashMap<>();
+                                    assert taskSnapshot.getUploadSessionUri() != null;
+                                    hashMap.put("imageUrl", taskSnapshot.getUploadSessionUri().toString());
+                                    hashMap.put("imageLocation", "Images/" + mAuth.getCurrentUser().getPhoneNumber() + "/" + value_phone + "/" + mImageRef1.getId() + ".jpg");
+                                    hashMap.put("by", mAuth.getCurrentUser().getDisplayName());
+                                    hashMap.put("message", "");
+                                    hashMap.put("timestamp", FieldValue.serverTimestamp());
+                                    String imageUrl = "Images/" + mAuth.getCurrentUser().getPhoneNumber() + "/" + value_phone + "/" + mImageRef1.getId() + ".jpg";
+                                    mRootRef.collection("Message").document(mAuth.getCurrentUser().getPhoneNumber()).collection(value_phone).document(mImageRef1.getId()).set(hashMap).toString();
+                                    mRootRef.collection("Message").document(value_phone).collection(mAuth.getCurrentUser().getPhoneNumber()).document(mImageRef1.getId()).set(hashMap);
 
 
+                                });
                             }
-                        });
+                        }
                     }
 
 
@@ -319,8 +307,6 @@ public class Activity_chats extends AppCompatActivity {
                             if (cursor != null) {
                                 cursor.moveToFirst();
 
-                                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                                String picturePath = cursor.getString(columnIndex);
                                 cursor.close();
                             }
                         }
