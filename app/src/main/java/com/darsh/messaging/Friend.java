@@ -9,16 +9,13 @@ public class Friend {
      this.Name=Name;
      this.phone=phone;
  }
- public Friend(){
-
- }
 
     public String getName(){
         return Name;
     }
     public void setName(String Name){ this.Name = Name; }
 
-    public String getPhone(){
+    String getPhone(){
         return phone;
     }
     public void setPhone(String phone){

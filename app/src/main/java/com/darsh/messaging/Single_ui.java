@@ -5,7 +5,7 @@ import android.app.Dialog;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class Single_ui {
+class Single_ui {
     private Dialog Dialog;
     private EditText number;
     Button search,cancel;

@@ -7,13 +7,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -26,10 +24,6 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -39,11 +33,9 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
-import java.util.Objects;
 
 public class Activity_chats extends AppCompatActivity {
     Button send;
@@ -285,7 +277,6 @@ public class Activity_chats extends AppCompatActivity {
                                     hashMap.put("by", mAuth.getCurrentUser().getDisplayName());
                                     hashMap.put("message", "");
                                     hashMap.put("timestamp", FieldValue.serverTimestamp());
-                                    String imageUrl = "Images/" + mAuth.getCurrentUser().getPhoneNumber() + "/" + value_phone + "/" + mImageRef1.getId() + ".jpg";
                                     mRootRef.collection("Message").document(mAuth.getCurrentUser().getPhoneNumber()).collection(value_phone).document(mImageRef1.getId()).set(hashMap).toString();
                                     mRootRef.collection("Message").document(value_phone).collection(mAuth.getCurrentUser().getPhoneNumber()).document(mImageRef1.getId()).set(hashMap);
 

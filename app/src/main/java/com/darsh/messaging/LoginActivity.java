@@ -1,23 +1,17 @@
 package com.darsh.messaging;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -25,7 +19,6 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -52,12 +45,7 @@ public class LoginActivity extends AppCompatActivity {
         next=findViewById(R.id.Next);
         number_inputlayout=findViewById(R.id.textInputLayout2);
 
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkData();
-            }
-        });
+        next.setOnClickListener(v -> checkData());
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -85,28 +73,22 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-        otpLayout.resend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mMessageDialog.setMessage("Resending OTP");
-                mMessageDialog.show();
-                resendOTP();
+        otpLayout.resend.setOnClickListener(v -> {
+            mMessageDialog.setMessage("Resending OTP");
+            mMessageDialog.show();
+            resendOTP();
 
-            }
         });
 
-        otpLayout.verify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String otp = otpLayout.getText();
-                if (otp.length() ==6 ) {
-                    mMessageDialog.setMessage("Verifying Otp");
-                    mMessageDialog.show();
+        otpLayout.verify.setOnClickListener(v -> {
+            String otp = otpLayout.getText();
+            if (otp.length() ==6 ) {
+                mMessageDialog.setMessage("Verifying Otp");
+                mMessageDialog.show();
 
-                    signin(PhoneAuthProvider.getCredential(resendId, otpLayout.getText()));
-                }else {
-                    otpLayout.setError();
-                }
+                signin(PhoneAuthProvider.getCredential(resendId, otpLayout.getText()));
+            }else {
+                otpLayout.setError();
             }
         });
 
@@ -116,65 +98,42 @@ public class LoginActivity extends AppCompatActivity {
         otpLayout.cancel();
         mMessageDialog.setMessage("Creating profile");
 
-        mAuth.signInWithCredential(phoneAuthCredential).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-            @Override
-            public void onSuccess(final AuthResult authResult) {
-                final FirebaseFirestore mRoot = FirebaseFirestore.getInstance();
+        mAuth.signInWithCredential(phoneAuthCredential).addOnSuccessListener(authResult -> {
+            final FirebaseFirestore mRoot = FirebaseFirestore.getInstance();
 
-                FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
-                    @Override
-                    public void onSuccess(InstanceIdResult instanceIdResult) {
+            FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult -> {
 
-                        String token = instanceIdResult.getToken();
-                        HashMap<String, String> userInfo = new HashMap<>();
+                String token = instanceIdResult.getToken();
+                HashMap<String, String> userInfo = new HashMap<>();
 
-                        if (TextUtils.isEmpty(authResult.getUser().getDisplayName())) {
-                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(name_editextbox.getText().toString()).build();
+                assert authResult.getUser()!= null;
+                if (TextUtils.isEmpty(authResult.getUser().getDisplayName())) {
+                    UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(name_editextbox.getText().toString()).build();
 
-                            authResult.getUser().updateProfile(profileChangeRequest);
-                            userInfo.put("name",name_editextbox.getText().toString());
-                        }else {
-                            userInfo.put("name",authResult.getUser().getDisplayName());
-                        }
+                    authResult.getUser().updateProfile(profileChangeRequest);
+                    userInfo.put("name",name_editextbox.getText().toString());
+                }else {
+                    userInfo.put("name",authResult.getUser().getDisplayName());
+                }
 
 
-                        String phone = "+91"+number_edittextbox.getText().toString();
-                        userInfo.put("Phone",phone);
-                        userInfo.put("token",token);
-                        userInfo.put("uid",authResult.getUser().getUid());
+                String phone = "+91"+number_edittextbox.getText().toString();
+                userInfo.put("Phone",phone);
+                userInfo.put("token",token);
+                userInfo.put("uid",authResult.getUser().getUid());
 
 
 
-                        mRoot.collection("Users").document(phone).set(userInfo, SetOptions.merge()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Intent mainIntent=new Intent(getApplicationContext(),MainActivity.class);
-                                startActivity(mainIntent);
-                                finish();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getApplicationContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-                            }
-                        }).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                Toast.makeText(getApplicationContext(),String.valueOf(task.isSuccessful()),Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                });
+                mRoot.collection("Users").document(phone).set(userInfo, SetOptions.merge()).addOnSuccessListener(aVoid -> {
+                    Intent mainIntent=new Intent(getApplicationContext(),MainActivity.class);
+                    startActivity(mainIntent);
+                    finish();
+                }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show()).addOnCompleteListener(task -> Toast.makeText(getApplicationContext(),String.valueOf(task.isSuccessful()),Toast.LENGTH_LONG).show());
+            });
 
 
 
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
+        }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show());
     }
 
     private void resendOTP() {

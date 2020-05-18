@@ -78,15 +78,12 @@ public class Friend_adapter extends RecyclerView.Adapter<Friend_adapter.SingleFr
         void bindToView(Friend friend, final Context context) {
             mName.setText(friend.getName());
             mphone.setText(friend.getPhone());
-            mRoot.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent ChatsIntent=new Intent(context,Activity_chats.class);
-                    ChatsIntent.putExtra("value_phone",mphone.getText());
-                    ChatsIntent.putExtra("value_name",mName.getText());
-                    ChatsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(ChatsIntent);
-                }
+            mRoot.setOnClickListener(v -> {
+                Intent ChatsIntent=new Intent(context,Activity_chats.class);
+                ChatsIntent.putExtra("value_phone",mphone.getText());
+                ChatsIntent.putExtra("value_name",mName.getText());
+                ChatsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(ChatsIntent);
             });
         }
     }

@@ -14,24 +14,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+
 import android.widget.Toast;
 
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
-import java.util.Objects;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,12 +71,7 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.RecyclerView2);
         mMessageDialog = new MessageDialog(this);
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Layout.show();
-            }
-        });
+        fab.setOnClickListener(v -> Layout.show());
 
         friend_adapter = new Friend_adapter(getApplicationContext());
 
@@ -91,68 +83,52 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(friend_adapter);
 
-        Layout.cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Layout.cancel();
-            }
-        });
+        Layout.cancel.setOnClickListener(v -> Layout.cancel());
 
-        Layout.search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        Layout.search.setOnClickListener(v -> {
 
-                final String phoneSearch= Layout.getText();
-                if (phoneSearch.length() != 10 ){
-                    Layout.setError();
-                }else {
-                    mMessageDialog.setTitle("Searching");
-                    mMessageDialog.setMessage("Searching for friend");
-                    mMessageDialog.show();
-                    mRoot.collection("Users").document("+91"+phoneSearch).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()){
-
-                                if (task.getResult().getData() == null){
-                                    mMessageDialog.hide();
-                                    Layout.cancel();
-                                    Snackbar snackbar = Snackbar.make(root_view,"Not Having an account", Snackbar.LENGTH_INDEFINITE)
-                                            .setDuration(8000)
-                                            .setAction("Invite", new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    sendInvite("+91"+phoneSearch);
-                                                }
-                                            });
-                                    snackbar.show();
-                                }else {
-                                    mMessageDialog.setMessage("Adding Friend");
-                                    HashMap<String,String> friendDetails = new HashMap<>();
-                                    friendDetails.put("Name",task.getResult().getData().get("name").toString());
-                                    friendDetails.put("phone","+91"+phoneSearch);
-                                    mRoot.collection("FriendList").document(mUser.getPhoneNumber()).collection("Friends").document("+91"+phoneSearch).set(friendDetails, SetOptions.merge()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()){
-                                                mMessageDialog.hide();
-                                                Layout.cancel();
-                                                Toast.makeText(getApplicationContext(),"Friend has been added successfully",Toast.LENGTH_LONG).show();
-
-                                            }else {
-                                                mMessageDialog.hide();
-                                                Toast.makeText(getApplicationContext(),"Error occurred please try again",Toast.LENGTH_LONG).show();
-                                            }
-                                        }
-                                    });
-                                }
-                            }else{
-                                Layout.cancel();
-                                Toast.makeText(getApplicationContext(),"There is an error try again", Toast.LENGTH_LONG).show();
-                            }
+            final String phoneSearch= Layout.getText();
+            if (phoneSearch.length() != 10 ){
+                Layout.setError();
+            }else {
+                mMessageDialog.setTitle("Searching");
+                mMessageDialog.setMessage("Searching for friend");
+                mMessageDialog.show();
+                mRoot.collection("Users").document("+91"+phoneSearch).get().addOnCompleteListener(task -> {
+                    assert task.getResult()!= null;
+                    if (task.isSuccessful()) if (task.getResult().getData() == null) {
+                        mMessageDialog.hide();
+                        Layout.cancel();
+                        Snackbar snackbar = Snackbar.make(root_view, "Not Having an account", Snackbar.LENGTH_INDEFINITE)
+                                .setDuration(8000)
+                                .setAction("Invite", v1 -> sendInvite("+91" + phoneSearch));
+                        snackbar.show();
+                    } else {
+                        mMessageDialog.setMessage("Adding Friend");
+                        HashMap<String, Object> friendDetails = new HashMap<>();
+                        if (task.getResult().getData().containsKey("name")) {
+                            assert task.getResult().getData() != null;
+                            friendDetails.put("Name", task.getResult().getData().get("name"));
                         }
-                    });
-                }
+                        friendDetails.put("phone", "+91" + phoneSearch);
+                        assert mUser.getPhoneNumber()!= null;
+                        mRoot.collection("FriendList").document(mUser.getPhoneNumber()).collection("Friends").document("+91" + phoneSearch).set(friendDetails, SetOptions.merge()).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                mMessageDialog.hide();
+                                Layout.cancel();
+                                Toast.makeText(getApplicationContext(), "Friend has been added successfully", Toast.LENGTH_LONG).show();
+
+                            } else {
+                                mMessageDialog.hide();
+                                Toast.makeText(getApplicationContext(), "Error occurred please try again", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                    else{
+                        Layout.cancel();
+                        Toast.makeText(getApplicationContext(),"There is an error try again", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 
@@ -168,20 +144,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void authWithFirebase(){
-        mAuthListener = new FirebaseAuth.AuthStateListener(){
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mUser = firebaseAuth.getCurrentUser();
-                if (mUser == null) {
-                    Intent LoginIntent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivity(LoginIntent);
-                    finish();
-                }else{
-                    mMessageRef = mRoot.collection("FriendList").document(mUser.getPhoneNumber()).collection("Friends");
-                    registration = mMessageRef.addSnapshotListener(friend_adapter);
-                }
-
+        mAuthListener = firebaseAuth -> {
+            mUser = firebaseAuth.getCurrentUser();
+            if (mUser == null) {
+                Intent LoginIntent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(LoginIntent);
+                finish();
+            }else{
+                assert mUser.getPhoneNumber() != null;
+                mMessageRef = mRoot.collection("FriendList").document(mUser.getPhoneNumber()).collection("Friends");
+                registration = mMessageRef.addSnapshotListener(friend_adapter);
             }
+
         };
     }
 

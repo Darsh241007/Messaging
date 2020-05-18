@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.widget.TextView;
 
-public class MessageDialog {
+class MessageDialog {
     private TextView title,message;
     private Dialog mDialog;
 
