@@ -10,6 +10,10 @@ public class Friend {
      this.phone=phone;
  }
 
+ public Friend(){
+
+ }
+
     public String getName(){
         return Name;
     }

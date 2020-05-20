@@ -27,7 +27,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/message"
-                android:layout_width="254dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Enter a message"
@@ -39,20 +39,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center|end"
+            android:layout_marginEnd="8dp"
             android:background="@drawable/ic_camera_alt_black_24dp" />
 
     </FrameLayout>
 
 
-
-    <com.google.android.material.button.MaterialButton
+    <ImageButton
         android:id="@+id/button3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
-        android:text="Send"
+        android:background="@drawable/purple_oval"
+        android:src="@drawable/arrow"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

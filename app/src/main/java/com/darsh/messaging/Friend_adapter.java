@@ -57,6 +57,7 @@ public class Friend_adapter extends RecyclerView.Adapter<Friend_adapter.SingleFr
             for (QueryDocumentSnapshot QueryDocument: queryDocumentSnapshots){
                 Friend friend = QueryDocument.toObject(Friend.class);
                 Log.d("Names",friend.getName());
+                Log.d("PHONES",friend.getPhone());
                 mFriendList.add(friend);
                 notifyDataSetChanged();
             }

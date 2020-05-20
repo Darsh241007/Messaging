@@ -35,12 +35,13 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
     private List<Message> mMessageList = new ArrayList<>();
     private String UserName;
     private StorageReference mRootRef;
-
+    private Context mContext;
 
         Chat_adapter(Context applicationContext, String name) {
             mInflater = LayoutInflater.from(applicationContext);
             UserName = name;
             mRootRef = FirebaseStorage.getInstance().getReference();
+            mContext = applicationContext;
     }
 
     @NonNull
@@ -53,7 +54,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
 
     @Override
     public void onBindViewHolder(@NonNull SingleMessage holder, int position) {
-        holder.bindToView(mMessageList.get(position),UserName,mRootRef);
+        holder.bindToView(mMessageList.get(position),UserName,mRootRef,mContext);
     }
 
     @Override
@@ -96,6 +97,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
         private TextView mTime1;
         private ImageView mImage;
         private ImageView mImage1;
+        private View mRootView;
 
 
         SingleMessage(@NonNull View itemView) {
@@ -106,10 +108,13 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
             mTime1 = itemView.findViewById(R.id.textView7);
             mImage = itemView.findViewById(R.id.imageView3);
             mImage1 = itemView.findViewById(R.id.imageView4);
+            mRootView=itemView.findViewById(R.id.message_layout);
         }
 
-        void bindToView(Message message, String username,StorageReference root){
+        void bindToView(Message message, String username,StorageReference root, Context context){
             if (message.getBy().equals(username)){
+                mRootView.setBackground(context.getResources().getDrawable(R.drawable.bg));
+                mMessage1.setTextColor(context.getResources().getColor(R.color.Black));
                 mMessage.setVisibility(View.GONE);
                 mTime.setVisibility(View.GONE);
                 mImage1.setVisibility(View.GONE);
@@ -161,6 +166,8 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
 
                 }
             }else {
+                mRootView.setBackground(context.getResources().getDrawable(R.drawable.bg1));
+                mMessage.setTextColor(context.getResources().getColor(R.color.White));
                 mMessage1.setVisibility(View.GONE);
                 mTime1.setVisibility(View.GONE);
                 mImage.setVisibility(View.GONE);

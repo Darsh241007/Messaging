@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -42,12 +43,15 @@ public class MainActivity extends AppCompatActivity {
     private CollectionReference mMessageRef;
     private Friend_adapter friend_adapter;
     private MessageDialog mMessageDialog;
+    private TextView your_name;
     private View root_view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        root_view=findViewById(R.id.root_view);
+        your_name=findViewById(R.id.your_name);
         mAuth = FirebaseAuth.getInstance();
         authWithFirebase();
 
@@ -64,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
 
-        root_view=findViewById(R.id.root_view);
+
 
         fab=findViewById(R.id.fab);
         Layout=new Single_ui(this);
@@ -151,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(LoginIntent);
                 finish();
             }else{
+                your_name.setText(mAuth.getCurrentUser().getDisplayName());
                 assert mUser.getPhoneNumber() != null;
                 mMessageRef = mRoot.collection("FriendList").document(mUser.getPhoneNumber()).collection("Friends");
                 registration = mMessageRef.addSnapshotListener(friend_adapter);

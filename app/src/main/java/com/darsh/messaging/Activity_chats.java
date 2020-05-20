@@ -38,7 +38,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 
 public class Activity_chats extends AppCompatActivity {
-    Button send;
+    ImageButton send;
     EditText message;
     RecyclerView Rview;
 
