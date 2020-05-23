@@ -10,11 +10,13 @@ import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,10 +25,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private MessageDialog mMessageDialog;
     private TextView your_name;
     private View root_view;
+    private ImageButton imageButton3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         root_view=findViewById(R.id.root_view);
         your_name=findViewById(R.id.your_name);
+        imageButton3=findViewById(R.id.imageButton3);
         mAuth = FirebaseAuth.getInstance();
         authWithFirebase();
 
@@ -68,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
 
-
+        imageButton3.setOnClickListener(v -> mAuth.signOut());
 
         fab=findViewById(R.id.fab);
         Layout=new Single_ui(this);
@@ -185,20 +191,4 @@ public class MainActivity extends AppCompatActivity {
         mAuth.removeAuthStateListener(mAuthListener);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.activity_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.logout){
-            mAuth.signOut();
-            return  true;
-        }else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
 }

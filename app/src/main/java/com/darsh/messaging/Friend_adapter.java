@@ -55,9 +55,10 @@ public class Friend_adapter extends RecyclerView.Adapter<Friend_adapter.SingleFr
         mFriendList.clear();
         if (queryDocumentSnapshots != null){
             for (QueryDocumentSnapshot QueryDocument: queryDocumentSnapshots){
-                Friend friend = QueryDocument.toObject(Friend.class);
-                Log.d("Names",friend.getName());
-                Log.d("PHONES",friend.getPhone());
+                Log.d("Datass",QueryDocument.getData().toString());
+                Friend friend = new Friend();
+                friend.setName(QueryDocument.getData().get("Name").toString());
+                friend.setPhone(QueryDocument.getData().get("phone").toString());
                 mFriendList.add(friend);
                 notifyDataSetChanged();
             }

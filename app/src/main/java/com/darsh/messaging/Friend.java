@@ -3,11 +3,11 @@ package com.darsh.messaging;
 
 public class Friend {
  private String Name;
- private String phone;
+ private String Phone;
 
- public Friend(String Name,String phone){
+ public Friend(String Name,String Phone){
      this.Name=Name;
-     this.phone=phone;
+     this.Phone=Phone;
  }
 
  public Friend(){
@@ -20,9 +20,9 @@ public class Friend {
     public void setName(String Name){ this.Name = Name; }
 
     String getPhone(){
-        return phone;
+        return Phone;
     }
-    public void setPhone(String phone){
-        this.phone = phone;
+    public void setPhone(String Phone){
+        this.Phone = Phone;
     }
 }

@@ -52,7 +52,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 builder.setContentTitle(remoteMessage.getData().get("title"))
                         .setContentText(remoteMessage.getData().get("body"))
-                        .setSmallIcon(R.mipmap.messagingappicon)
+                        .setSmallIcon(R.mipmap.messaginglogo)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true);
@@ -66,7 +66,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     builder.setContentTitle(remoteMessage.getData().get("title"))
                             .setContentText(remoteMessage.getData().get("body"))
-                            .setSmallIcon(R.mipmap.messagingappicon)
+                            .setSmallIcon(R.mipmap.messaginglogo)
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .setContentIntent(pendingIntent)
                             .setLargeIcon(bitmap)
@@ -74,7 +74,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                             .setAutoCancel(true);
                 }).addOnFailureListener(e -> builder.setContentTitle(remoteMessage.getData().get("title"))
                         .setContentText(remoteMessage.getData().get("imageLocation"))
-                        .setSmallIcon(R.mipmap.messagingappicon)
+                        .setSmallIcon(R.mipmap.messaginglogo)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true));

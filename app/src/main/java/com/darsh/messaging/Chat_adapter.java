@@ -71,7 +71,15 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
         mMessageList.clear();
         if (queryDocumentSnapshots != null){
             for (QueryDocumentSnapshot QueryDocument: queryDocumentSnapshots){
-                Message message = QueryDocument.toObject(Message.class);
+                Message message =new Message();
+                if (QueryDocument.contains("message")) {
+                    message.setMessage(QueryDocument.getData().get("message").toString());
+                }
+                message.setBy(QueryDocument.getData().get("by").toString());
+                message.setTimestamp(QueryDocument.getTimestamp("timestamp").toDate());
+                if (QueryDocument.contains("imageLocation")) {
+                    message.setImageLocation(QueryDocument.getData().get("imageLocation").toString());
+                }
                 message.setId(QueryDocument.getId());
                 boolean dub  = false;
                 for(Message message1: mMessageList){
@@ -115,6 +123,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
             if (message.getBy().equals(username)){
                 mRootView.setBackground(context.getResources().getDrawable(R.drawable.bg));
                 mMessage1.setTextColor(context.getResources().getColor(R.color.Black));
+                mTime1.setTextColor(context.getResources().getColor(R.color.Black));
                 mMessage.setVisibility(View.GONE);
                 mTime.setVisibility(View.GONE);
                 mImage1.setVisibility(View.GONE);
@@ -168,6 +177,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
             }else {
                 mRootView.setBackground(context.getResources().getDrawable(R.drawable.bg1));
                 mMessage.setTextColor(context.getResources().getColor(R.color.White));
+                mTime.setTextColor(context.getResources().getColor(R.color.White));
                 mMessage1.setVisibility(View.GONE);
                 mTime1.setVisibility(View.GONE);
                 mImage.setVisibility(View.GONE);

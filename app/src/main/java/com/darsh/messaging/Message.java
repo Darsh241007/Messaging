@@ -12,7 +12,9 @@ public class Message {
     private String id;
 
 
+    public Message(){
 
+    }
     public Message(String message, String by, Date timestamp,String imageLocation) {
         this.message = message;
         this.by = by;
@@ -42,4 +44,12 @@ public class Message {
     public void setId(String id) {
         this.id = id;
     }
+
+    public void setMessage(String message){this.message=message;}
+
+    public void setBy (String by){this.by=by;}
+
+    public void setTimestamp(Date timestamp){this.timestamp=timestamp;}
+
+    public void setImageLocation(String imageLocation){this.imageLocation=imageLocation;}
 }
