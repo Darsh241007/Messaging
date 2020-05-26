@@ -223,31 +223,7 @@ public class Activity_chats extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        chat_adapter.clear();
-        if (registration != null) {
-            registration.remove();
-        }
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (registration == null){
-            registration = mMessageRef.orderBy("timestamp", Query.Direction.ASCENDING).addSnapshotListener(chat_adapter);
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        chat_adapter.clear();
-        if (registration != null) {
-            registration.remove();
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

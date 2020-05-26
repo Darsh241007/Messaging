@@ -69,6 +69,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
     @Override
     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
         mMessageList.clear();
+        notifyDataSetChanged();
         if (queryDocumentSnapshots != null){
             for (QueryDocumentSnapshot QueryDocument: queryDocumentSnapshots){
                 Message message =new Message();
@@ -76,7 +77,12 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
                     message.setMessage(QueryDocument.getData().get("message").toString());
                 }
                 message.setBy(QueryDocument.getData().get("by").toString());
-                message.setTimestamp(QueryDocument.getTimestamp("timestamp").toDate());
+                if (QueryDocument.contains("timestamp")) {
+                    if (QueryDocument.getTimestamp("timestamp") != null){
+                        message.setTimestamp(QueryDocument.getTimestamp("timestamp").toDate());
+                    }
+
+                }
                 if (QueryDocument.contains("imageLocation")) {
                     message.setImageLocation(QueryDocument.getData().get("imageLocation").toString());
                 }
@@ -147,7 +153,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
 
                     StorageReference islandRef = root.child(message.getImageLocation());
 
-                    final long ONE_MEGABYTE = 512 * 512;
+                    final long ONE_MEGABYTE = 256 * 256;
                     islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         mImage.setVisibility(View.VISIBLE);
@@ -185,7 +191,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
                     mMessage.setVisibility(View.GONE);
                     StorageReference islandRef = root.child(message.getImageLocation());
 
-                    final long ONE_MEGABYTE = 512 * 512;
+                    final long ONE_MEGABYTE = 256 * 256;
                     islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         mImage1.setVisibility(View.VISIBLE);
