@@ -48,6 +48,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
     @Override
     public Chat_adapter.SingleMessage onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
+            // TODO Scroll not working properly
         View view = mInflater.inflate(R.layout.singlemessage_ui, parent, false);
         return new SingleMessage(view);
     }

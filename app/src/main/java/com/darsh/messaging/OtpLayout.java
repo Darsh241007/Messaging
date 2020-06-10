@@ -2,8 +2,12 @@ package com.darsh.messaging;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.Constraints;
 
 class OtpLayout {
 
@@ -20,6 +24,7 @@ class OtpLayout {
         Otp= dialog.findViewById(R.id.editText3);
         verify=dialog.findViewById(R.id.button2);
         resend=dialog.findViewById(R.id.button);
+
     }
 
     String getText(){
@@ -31,6 +36,8 @@ class OtpLayout {
 
     void show(){
         mDialog.show();
+        Window window = mDialog.getWindow();
+        window.setLayout(Constraints.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.WRAP_CONTENT);
     }
 
     void cancel(){

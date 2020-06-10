@@ -128,7 +128,7 @@ public class LoginActivity extends AppCompatActivity {
                     Intent mainIntent=new Intent(getApplicationContext(),MainActivity.class);
                     startActivity(mainIntent);
                     finish();
-                }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show()).addOnCompleteListener(task -> Toast.makeText(getApplicationContext(),String.valueOf(task.isSuccessful()),Toast.LENGTH_LONG).show());
+                }).addOnFailureListener(e -> Toast.makeText(getApplicationContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show());
             });
 
 
