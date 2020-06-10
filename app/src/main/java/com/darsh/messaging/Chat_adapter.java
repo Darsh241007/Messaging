@@ -153,7 +153,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
 
                     StorageReference islandRef = root.child(message.getImageLocation());
 
-                    final long ONE_MEGABYTE = 256 * 256;
+                    final long ONE_MEGABYTE = 1024 * 1024;
                     islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         mImage.setVisibility(View.VISIBLE);
@@ -191,7 +191,7 @@ public class Chat_adapter extends RecyclerView.Adapter<Chat_adapter.SingleMessag
                     mMessage.setVisibility(View.GONE);
                     StorageReference islandRef = root.child(message.getImageLocation());
 
-                    final long ONE_MEGABYTE = 256 * 256;
+                    final long ONE_MEGABYTE = 1024 * 1024;
                     islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(bytes -> {
                         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         mImage1.setVisibility(View.VISIBLE);
